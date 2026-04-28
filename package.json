@@ -1,0 +1,25 @@
+{
+  "name": "ktu-scraper",
+  "version": "1.0.0",
+  "description": "A web scraper for KTU student profiles and grades using Bun",
+  "main": "index.ts",
+  "author": {
+    "name": "Kichu"
+  },
+  "module": "index.ts",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch index.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "fetch-cookie": "^3.2.0"
+  }
+}
