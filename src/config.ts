@@ -8,6 +8,6 @@ export const config = {
   BASIC_PROFILE_URL: "https://app.ktu.edu.in/eu/stu/studentBasicProfile.htm",
   FULL_DETAILS_URL: "https://app.ktu.edu.in/eu/stu/studentDetailsView.htm",
   GRADE_CARD_URL: "https://app.ktu.edu.in/eu/res/semesterGradeCardListing.htm",
-  USER_AGENT:
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36",
+  // A common User-Agent to mimic a real browser. Some sites might block requests without it.
+  USER_AGENT: "Mozilla/5.0",
 };
