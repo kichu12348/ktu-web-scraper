@@ -3,11 +3,14 @@ export interface Course {
   credits: string;
   grade: string;
   code?: string; // Optional, only available in the grade card view
+  monthYear?: string; // Optional, only available in the grade card view
 }
 
 export interface GradesBySemester {
   semester: string;
   sgpa: string;
+  totalCredits?: string; // Optional, only available in the grade card view
+  earnedCredits?: string; // Optional, only available in the grade card view
   courses: Course[];
 }
 

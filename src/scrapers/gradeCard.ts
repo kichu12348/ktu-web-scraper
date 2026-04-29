@@ -1,12 +1,12 @@
-import * as cheerio from "cheerio";
 import { config } from "../config";
 import { fetchClient } from "../client";
-import type { Course, GradesBySemester } from "../types";
+import type { GradesBySemester } from "../types";
+import fs from "node:fs";
+import { parseGradeCard } from "../parser/gradeCardParser";
 
 export async function fetchGradeCard(
   targetSemester: string,
 ): Promise<GradesBySemester> {
-  console.log("Fetching Grade Card Search Form...");
   let gradeGetRes;
   try {
     gradeGetRes = await fetchClient(config.GRADE_CARD_URL, {
@@ -63,48 +63,15 @@ export async function fetchGradeCard(
   }
 
   const resultsHtml = await gradePostRes.text();
-  const $res = cheerio.load(resultsHtml);
 
-  // --- 3. PARSE THE CLEAN TABLE ---
+  // For debugging purposes, you can save the results HTML to a file
+  fs.writeFileSync("gradeCardResults.txt", resultsHtml);
 
-  // Check if the results are actually out
-  // check if "#errorMainDiv" exists and contains the "not published" text
-  const errorText = $res("#errorMainDiv").text().trim().toLocaleLowerCase();
-  if (
-    errorText.includes("semester grade cards not available") ||
-    errorText.length !== 0
-  ) {
-    throw new Error(
-      "Semester results are not available for the semester " + targetSemester,
-    );
+  // --- 3. PARSE THE RESULTS ---
+  try {
+    return parseGradeCard(resultsHtml, targetSemester);
+  } catch (e) {
+    console.error("Error parsing grade card results:", (e as Error).message);
+    throw new Error("Failed to parse grade card results", { cause: e });
   }
-  const grades: Course[] = [];
-  let sgpa = "Not Available";
-
-  // Select the table rows inside the results body
-  $res("table tbody tr").each((_, tr) => {
-    const tds = $res(tr).find("td");
-    const firstColText = $res(tds[0]).text().trim().toLocaleLowerCase();
-
-    // Check if we hit the summary rows at the bottom
-    if (
-      firstColText.includes("total earned credits") ||
-      firstColText.includes("total credits in the semester") ||
-      firstColText.includes("sgpa")
-    ) {
-      if (firstColText.includes("sgpa")) {
-        sgpa = $res(tds[1]).text().trim();
-      }
-    } else if (tds.length >= 4 && firstColText !== "") {
-      // It's a standard course row
-      grades.push({
-        course: firstColText,
-        code: $res(tds[1]).text().trim(),
-        grade: $res(tds[2]).text().trim(),
-        credits: $res(tds[3]).text().trim(),
-      });
-    }
-  });
-
-  return { semester: targetSemester, sgpa, courses: grades };
 }

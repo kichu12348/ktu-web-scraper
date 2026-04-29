@@ -1,4 +1,5 @@
 import { loginToKtu } from "./src/auth";
+
 //import { fetchBasicProfile } from "./src/scrapers/profile";
 //import { fetchGrades } from "./src/scrapers/grades";
 import { fetchGradeCard } from "./src/scrapers/gradeCard";
