@@ -11,3 +11,5 @@ export const config = {
   // A common User-Agent to mimic a real browser. Some sites might block requests without it.
   USER_AGENT: "Mozilla/5.0",
 };
+
+export const MAX_RETRIES = 999;

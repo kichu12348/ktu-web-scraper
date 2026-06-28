@@ -14,9 +14,9 @@ async function scrapeKtu() {
   // --- FETCH SPECIFIC GRADE CARD (E.G. S6) ---
 
   try {
-    const gradeCard = await fetchGradeCard("5");
+    const gradeCard = await fetchGradeCard("6");
 
-    console.log("\n================ GRADE CARD (S5) ================\n");
+    console.log("\n================ GRADE CARD (S6) ================\n");
     console.log(`Semester: ${gradeCard.semester}`);
     console.log(`SGPA: ${gradeCard.sgpa}`);
     console.table(gradeCard.courses);
