@@ -1,5 +1,18 @@
 import { config, MAX_RETRIES } from "./config";
 import { fetchClient } from "./client";
+import fs from "node:fs";
+
+/*
+<div id="loginFailureDiv" style="">
+                                             <div class="alert alert-danger">Error ! Invalid username or password.</div>
+										</div>
+*/
+
+const loginFailedDivPattern =
+  /<div[^>]*id="loginFailureDiv"[^>]*>[\s\S]*<\/div>/i;
+
+const errorDivPattern =
+  /<div[^>]*class="alert alert-danger"[^>]*>[\s\S]*<\/div>/i;
 
 export async function loginToKtu(
   username: string,
@@ -71,10 +84,20 @@ export async function loginToKtu(
         body: payload.toString(),
       });
 
+      const text = await res.text();
+
+      const errMsg = text.match(errorDivPattern)?.[0].trim();
+
+      if (errMsg && errMsg.includes("Invalid username or password")) {
+        console.error("Invalid Username or password!\n");
+        return false;
+      }
+
       if (!res.ok && !res.url.includes("dashboard.htm")) {
         console.warn(
           `⚠️  POST returned ${res.status} (attempt ${attempt}/${MAX_RETRIES}), retrying...`,
         );
+        // fs.writeFileSync("./debug/login_output.html", await res.text());
         continue;
       }
 
@@ -86,6 +109,7 @@ export async function loginToKtu(
       console.warn(
         `⚠️  Login didn't reach dashboard (attempt ${attempt}/${MAX_RETRIES}), ended at: ${res.url} status: ${res.status}. Retrying...`,
       );
+      //fs.writeFileSync("./debug/login_output_2.html", await res.text());
     } catch (err) {
       const e = err as Error;
       console.warn(
